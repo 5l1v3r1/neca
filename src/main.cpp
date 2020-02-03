@@ -196,6 +196,7 @@ public:
                 cout << (max_step_sqnorm / tmp[1]) << endl;
 
                 exit(1);
+                //continue;
             }
         } else {
             if (!search[0]) {
@@ -534,18 +535,51 @@ int main(int argc, char *argv[]) {
     cout << endl;
 #endif
 
-    if (argc < 2) {
+    /*if (argc < 2) {
         cout << "Usage: neca <N>" << endl;
         return 0;
-    }
+    }*/
 
+    FILE *fp = stdin;
+  
+    char *line_buf = NULL;
+    size_t line_buf_size = 0;
+    int line_count = 0;
+    ssize_t line_size;
+
+ 
+    if (!fp)
+    {
+      fprintf(stderr, "Error opening file\n");
+      return EXIT_FAILURE;
+    }
+   
+    line_size = getline(&line_buf, &line_buf_size, fp);
+
+    /* Loop through until we are done with the file. */
+    while (line_size >= 0)
+    {
+    /* Increment our line count */
+    line_count++;
+
+    /* Show the line details */
+    //printf("line[%06d]: chars=%06zd, buf size=%06zu, contents: %s", line_count,
+    //    line_size, line_buf_size, line_buf);
+
+    /* Get the next line */
+    //line_size = getline(&line_buf, &line_buf_size, fp);
+    //}
+    
+    
     mpz_class n;
 
-    if (set_str(n, argv[1], 0) != 0) {
-        cout << "Could not parse RSA modulus, " <<
-            "use 0x prefix for hexadecimal." << endl;
-        return 1;
-    }
+    set_str(n,line_buf,0);
+
+    //if (set_str(n, argv[1], 0) != 0) {
+    //    cout << "Could not parse RSA modulus, " <<
+    //        "use 0x prefix for hexadecimal." << endl;
+    //    return 1;
+    //}
 
     using namespace std;
     using std::chrono::seconds;
@@ -561,7 +595,7 @@ int main(int argc, char *argv[]) {
 
     if (neca_inst.dlog_n < 0) {
         cout << "Given key does not seem to be weak." << endl;
-        return 1;
+        //return 1;
     } else {
         cout << "Factoring...\n" << endl;
     }
@@ -656,6 +690,15 @@ int main(int argc, char *argv[]) {
 
     if (!solution_found) {
         cout << "\nNo factorization found. :(" << endl;
-        return 1;
+    //    return 1;
     }
+    line_size = getline(&line_buf, &line_buf_size, fp);
+    }
+    free(line_buf);
+    line_buf = NULL;
+
+    /* Close the file now that we are done with it */
+    fclose(fp);
+
+    //return EXIT_SUCCESS;
 }
